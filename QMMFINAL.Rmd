@@ -1,0 +1,97 @@
+---
+title: "qmm final"
+author: "Sony kiran"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+## Factors that define the success of the students
+
+The three conditions we considered in predicting student performance are:
+
+1. Course GPA - The student's GPA for a course
+
+2. Proficiency - Defining a student's level of proficiency in the course.
+
+3. Coursework - How thoroughly the student understands the subject.
+
+## Data Collection
+GPAs from students should be easy to acquire for course administrators. Other elements can be gathered by a survey/questionnaire or by displaying hands in class.
+
+
+# Each group has three students out of 12 students.
+```{r}
+set.seed(26524)
+Data_Of_the_Student <- data.frame(Course_GPA = rnorm(12, mean=0.80, sd=0.1),
+                       Proficiency = sample(0:1, size=12, replace=TRUE),
+                       Coursework = sample.int(5, size=12, replace=TRUE))
+```
+
+
+```{r}
+# Ensuring max GPA of 1 and rounding to two places
+library(dplyr)
+Data_Of_the_Student <- Data_Of_the_Student %>% mutate(Course_GPA=if_else(Course_GPA > 1, 1, round(Course_GPA, 2)))
+```
+
+
+```{r}
+head(Data_Of_the_Student)
+```
+## Decision Variables
+
+Decision variables are members of groups.A value of $H_[i,j]$ indicates whether a student belongs to the group in which the student is jth.
+
+## Objective Function
+
+It is the objective of this project to maximize the chances of success for each individual group.
+
+Since all of the groups will have equal odds of success, we only need to compute the success rate of one group: $textMAX hspace.2cm Z=q 1 $, where $q i$ represents the success rate of the ith group.
+
+Based on the factors above, we can define the chances of success.For all j students in group i,
+
+let $q_i = /Sigma_j / y_j + f_j + 0.2l_j$, 
+
+where,
+$y_j$ is the student's GPA, 
+
+$f_j$ is whether they have similar prior proficiency, and 
+
+$l_j$ is their CourseWork.
+
+As needed, the coefficients can be adjusted.
+
+## Constraints considered for this project
+The constraints we have considered for this model are the following:
+
+* All groups should have the same likelihood of success.
+
+* Each group has exactly three members.
+
+* A member must be in exactly one group at a time.
+```{r}
+library(lpSolveAPI)
+Student <- read.lp("Finallp.lp")
+solve(Student)
+```
+
+```{r}
+get.objective(Student)
+```
+
+```{r}
+get.variables(Student)
+```
+## Decisions from the Group-1,2,3,4
+Below are the decisions for where each student should end up: 
+
+Students belongs to Group 1 - 1,8,10
+
+Students belongs to Group 2 - 2,3,5
+
+Students belongs to Group 3 - 4,7,11  
+
+Students belongs to Group 4 - 6,9,12
+
+```
